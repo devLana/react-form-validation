@@ -1,0 +1,193 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+  line-height: 1;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form {
+  width: 90%;
+  min-width: 30rem;
+  max-width: 45rem;
+  margin: 0 auto;
+  padding: 2.5rem 2rem;
+}
+
+.form-control {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group,
+.form-control {
+  margin-bottom: 2rem;
+}
+
+.form-group:last-of-type,
+.form-control:last-child {
+  margin-bottom: 0;
+}
+
+label {
+  align-self: flex-start;
+  color: #060;
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+input[name] {
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 0.1rem solid rgba(0, 102, 0, 0.5);
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.6rem;
+  line-height: 1;
+  transition: 0.2s linear;
+  outline: none;
+}
+
+input[name]:hover {
+  border: 0.1rem solid rgba(0, 255, 0, 0.7);
+}
+
+input[name]:focus {
+  border: 0.1rem solid rgba(0, 102, 0, 0.5);
+  box-shadow: 0 0 0.2rem 0.2rem #0f0;
+}
+
+::placeholder {
+  color: #c0c0c0;
+  font-size: 1.3rem;
+  font-style: italic;
+}
+
+:-ms-input-placeholder {
+  color: #c0c0c0;
+  font-size: 1.3rem;
+  font-style: italic;
+}
+
+::-ms-input-placeholder {
+  color: #c0c0c0;
+  font-size: 1.3rem;
+  font-style: italic;
+}
+
+.password-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 1rem;
+  border: 0.1rem solid rgba(0, 102, 0, 0.5);
+}
+
+.password-wrapper:hover {
+  border: 0.1rem solid rgba(0, 255, 0, 0.7);
+}
+
+.password-wrapper > input {
+  width: calc(100% - 4rem);
+  border: none;
+  border-radius: 1rem 0 0 1rem;
+}
+
+.password-wrapper:hover > input {
+  border: none;
+}
+
+.password-wrapper > input:focus {
+  border: none;
+  box-shadow: none;
+}
+
+.toggle-password__container {
+  font-size: 1.6rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-right: 0.5rem;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  cursor: pointer;
+  outline: none;
+  transition: 200ms linear;
+}
+
+.toggle-password__container:hover,
+.toggle-password__container:focus {
+  background-color: #f2f2f2;
+}
+
+#submit {
+  border: 0.2rem solid #060;
+  border-radius: 5rem;
+  padding: 0.9rem;
+  background-color: rgba(0, 255, 0, 0.2);
+  color: #060;
+  font-weight: bold;
+  font-size: 1.8rem;
+  letter-spacing: 0.2rem;
+  transition: 200ms linear;
+  cursor: pointer;
+  outline: none;
+}
+
+#submit:hover {
+  border: 0.2rem solid rgba(0, 102, 0, 0.5);
+  background-color: rgba(0, 255, 0, 0.4);
+}
+
+#submit:focus {
+  border: 0.2rem solid rgba(0, 102, 0, 0.5);
+  background-color: rgba(0, 255, 0, 0.4);
+}
+
+@media screen and (min-width: 500px) {
+  .form-group:nth-child(1),
+  .form-group:nth-child(3),
+  .form-group:nth-child(4) {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .form-group:nth-child(1) .form-control,
+  .form-group:nth-child(3) .form-control,
+  .form-group:nth-child(4) .form-control {
+    width: 48%;
+  }
+
+  .form-group:last-of-type .form-control {
+    align-items: center;
+  }
+
+  .form-control {
+    margin-bottom: 0;
+  }
+
+  #submit {
+    padding: 0.9rem 2rem;
+  }
+}
