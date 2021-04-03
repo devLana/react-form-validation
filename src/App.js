@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Button from "./Components/Button";
+import { getEmail, getPhoneNumber, getUsername } from "./service";
 
 const App = () => {
   const [visibility, setVisibility] = useState(false);
@@ -99,6 +101,29 @@ const App = () => {
 
   const submitHandler = e => {
     e.preventDefault();
+
+    if (!state.firstName.trim()) {
+      setErrors({ ...errors, firstName: "Enter first name" });
+    }
+
+    if (!state.lastName.trim()) {
+      setErrors({ ...errors, lastName: "Enter last names" });
+    }
+
+    if (
+      !errors.firstName ||
+      errors.lastName ||
+      errors.gender ||
+      errors.username ||
+      errors.email ||
+      errors.phoneNumber ||
+      errors.password ||
+      errors.confirmPassword
+    ) {
+      return;
+    } else {
+      alert("Hi");
+    }
   };
 
   return (
@@ -207,7 +232,7 @@ const App = () => {
               autoComplete="on"
               onChange={handleChange}
               onFocus={handleFocus}
-              onBlur={e => {
+              onBlur={async e => {
                 const { value } = e.target;
 
                 if (!value.trim()) {
@@ -218,6 +243,15 @@ const App = () => {
                     username:
                       "Username can only contain alphabets, numbers and underscore",
                   });
+                } else {
+                  const usernameExists = await getUsername(value);
+
+                  if (usernameExists) {
+                    setErrors({
+                      ...errors,
+                      username: "This username has been taken. Try another one",
+                    });
+                  }
                 }
 
                 handleBlur(e);
@@ -241,7 +275,7 @@ const App = () => {
               placeholder="E-mail"
               onChange={handleChange}
               onFocus={handleFocus}
-              onBlur={e => {
+              onBlur={async e => {
                 const { value } = e.target;
                 const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 
@@ -252,6 +286,15 @@ const App = () => {
                     ...errors,
                     email: "Enter a valid email address",
                   });
+                } else {
+                  const emailExists = await getEmail(value);
+
+                  if (emailExists) {
+                    setErrors({
+                      ...errors,
+                      email: "This email has been taken. Try another one",
+                    });
+                  }
                 }
 
                 handleBlur(e);
@@ -278,7 +321,7 @@ const App = () => {
                 handleChange(e);
               }}
               onFocus={handleFocus}
-              onBlur={e => {
+              onBlur={async e => {
                 const { value } = e.target;
                 const regex = /^(\+)?\s?\(?\d{1,4}\)?\s?\d{9,}$/;
 
@@ -289,6 +332,16 @@ const App = () => {
                     ...errors,
                     phoneNumber: "Enter a valid phone number",
                   });
+                } else {
+                  const numberExists = await getPhoneNumber(value);
+
+                  if (numberExists) {
+                    setErrors({
+                      ...errors,
+                      phoneNumber:
+                        "This phone number has been taken. Try another one",
+                    });
+                  }
                 }
 
                 handleBlur(e);
@@ -404,27 +457,5 @@ const App = () => {
     </div>
   );
 };
-
-const Button = ({
-  passwordFocus,
-  passwordBlur,
-  togglePassword,
-  visibility,
-}) => (
-  <button
-    className="toggle-password__container"
-    onFocus={passwordFocus}
-    onBlur={passwordBlur}
-    onClick={togglePassword}
-  >
-    <span className="password--toggler">
-      {visibility ? (
-        <i className="far fa-eye"></i>
-      ) : (
-        <i className="far fa-eye-slash"></i>
-      )}
-    </span>
-  </button>
-);
 
 export default App;
