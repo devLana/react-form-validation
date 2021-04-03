@@ -50,12 +50,33 @@ form {
   margin-bottom: 0;
 }
 
-label {
+label,
+.radio__label {
   align-self: flex-start;
   color: #060;
   font-size: 1.4rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
+}
+
+.form-error > label,
+.form-error > .radio__label {
+  color: #ff5c33;
+}
+
+.radio__label {
+  margin-bottom: 1rem;
+}
+
+label[for="male"],
+label[for="female"] {
+  margin-bottom: 0;
+}
+
+input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 input[name] {
@@ -69,13 +90,39 @@ input[name] {
   outline: none;
 }
 
-input[name]:hover {
-  border: 0.1rem solid rgba(0, 255, 0, 0.7);
-}
-
 input[name]:focus {
   border: 0.1rem solid rgba(0, 102, 0, 0.5);
-  box-shadow: 0 0 0.2rem 0.2rem #0f0;
+  box-shadow: 0 0 0.5rem -0.1rem #0f0;
+}
+
+.form-error > input[name] {
+  border: 0.1rem solid #ff5c33;
+}
+
+.radio__input__container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.radio__wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.radio__wrapper:nth-child(2) {
+  margin-left: 5rem;
+}
+
+input[type=radio] {
+  margin-left: 1rem;
+  border-radius: 50%;
+  padding: 0;
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+input[type=radio]:checked {
+  border-width: 0.4rem;
 }
 
 ::placeholder {
@@ -104,18 +151,14 @@ input[name]:focus {
   border: 0.1rem solid rgba(0, 102, 0, 0.5);
 }
 
-.password-wrapper:hover {
-  border: 0.1rem solid rgba(0, 255, 0, 0.7);
+.form-error > .password-wrapper {
+  border: 0.1rem solid #ff5c33;
 }
 
 .password-wrapper > input {
   width: calc(100% - 4rem);
   border: none;
   border-radius: 1rem 0 0 1rem;
-}
-
-.password-wrapper:hover > input {
-  border: none;
 }
 
 .password-wrapper > input:focus {
@@ -167,15 +210,15 @@ input[name]:focus {
 
 @media screen and (min-width: 500px) {
   .form-group:nth-child(1),
-  .form-group:nth-child(3),
-  .form-group:nth-child(4) {
+  .form-group:nth-child(4),
+  .form-group:nth-child(5) {
     display: flex;
     justify-content: space-between;
   }
 
   .form-group:nth-child(1) .form-control,
-  .form-group:nth-child(3) .form-control,
-  .form-group:nth-child(4) .form-control {
+  .form-group:nth-child(4) .form-control,
+  .form-group:nth-child(5) .form-control {
     width: 48%;
   }
 
@@ -190,4 +233,12 @@ input[name]:focus {
   #submit {
     padding: 0.9rem 2rem;
   }
+}
+
+.error__box {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ff5c33;
+  line-height: 1.5;
+  margin-top: 0.5rem;
 }
