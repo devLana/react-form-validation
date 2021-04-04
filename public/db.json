@@ -1,0 +1,52 @@
+[
+  {
+    "username": "John",
+    "email": "john@example.com",
+    "phoneNumber": "08012345678"
+  },
+  {
+    "username": "Peter",
+    "email": "peter@example.com",
+    "phoneNumber": "08098765432"
+  },
+  {
+    "username": "James123",
+    "email": "james@mail.com",
+    "phoneNumber": "09012387638"
+  },
+  {
+    "username": "SusanJenkins",
+    "email": "susan@example.mail.com",
+    "phoneNumber": "05727519501"
+  },
+  {
+    "username": "max999",
+    "email": "maxwellsmith@mail.co",
+    "phoneNumber": "12345678901"
+  },
+  {
+    "username": "MayParker",
+    "email": "mp@gmail.com",
+    "phoneNumber": "09087041269"
+  },
+  {
+    "username": "Mary_Jane",
+    "email": "mj@yahoo.co.uk",
+    "phoneNumber": "08012121212"
+  },
+  {
+    "username": "Gwen",
+    "email": "gwenstacy@email.uk",
+    "phoneNumber": "07051758746"
+  },
+  {
+    "username": "Dean_2000",
+    "email": "dean@example.com",
+    "phoneNumber": "01036975237"
+  },
+  {
+    "username": "Sam_1000",
+    "email": "sam@mail.com",
+    "phoneNumber": "01795234789"
+  }
+]

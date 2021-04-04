@@ -90,7 +90,8 @@ input[name] {
   outline: none;
 }
 
-input[name]:focus {
+input[name]:focus,
+.password--active {
   border: 0.1rem solid rgba(0, 102, 0, 0.5);
   box-shadow: 0 0 0.5rem -0.1rem #0f0;
 }
@@ -184,7 +185,8 @@ input[type=radio]:checked {
   background-color: #f2f2f2;
 }
 
-#submit {
+#submit,
+.form--success__footer button {
   border: 0.2rem solid #060;
   border-radius: 5rem;
   padding: 0.9rem;
@@ -198,12 +200,14 @@ input[type=radio]:checked {
   outline: none;
 }
 
-#submit:hover {
+#submit:hover,
+.form--success__footer button:hover {
   border: 0.2rem solid rgba(0, 102, 0, 0.5);
   background-color: rgba(0, 255, 0, 0.4);
 }
 
-#submit:focus {
+#submit:focus,
+.form--success__footer button:focus {
   border: 0.2rem solid rgba(0, 102, 0, 0.5);
   background-color: rgba(0, 255, 0, 0.4);
 }
@@ -241,4 +245,42 @@ input[type=radio]:checked {
   color: #ff5c33;
   line-height: 1.5;
   margin-top: 0.5rem;
+}
+
+.form--success__header {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #060;
+  border-left: 0.3rem solid #060;
+  border-radius: 0 1rem 1rem 0;
+  background-color: rgba(0, 255, 0, 0.2);
+  padding: 1.4rem;
+  margin-bottom: 2rem;
+}
+
+.form--success__body {
+  margin-bottom: 3rem;
+}
+
+.form--success__item {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.form--success__item:last-of-type {
+  margin-bottom: 0;
+}
+
+.form--success__item > strong {
+  color: #060;
+  margin-right: 1rem;
+}
+
+.form--success__item > span {
+  color: #060;
+}
+
+.form--success__footer {
+  display: flex;
+  flex-direction: column;
 }
