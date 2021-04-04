@@ -99,19 +99,86 @@ const App = () => {
 
   const togglePassword = () => setVisibility(s => !s);
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
 
+    const errors = {};
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+    const phoneRegex = /^(\+)?\s?\(?\d{1,4}\)?\s?\d{9,}$/;
+
     if (!state.firstName.trim()) {
-      setErrors({ ...errors, firstName: "Enter first name" });
+      errors.firstName = "Enter first name";
     }
 
     if (!state.lastName.trim()) {
-      setErrors({ ...errors, lastName: "Enter last names" });
+      errors.lastName = "Enter last name";
     }
 
+    if (!state.gender) {
+      errors.gender = "Select your gender";
+    }
+
+    if (!state.username.trim()) {
+      errors.username = "Enter username";
+    } else if (/[^\w]/.test(state.username.trim())) {
+      errors.username =
+        "Username can only contain alphabets, numbers and underscore";
+    } else {
+      const usernameExists = await getUsername(state.username.trim());
+
+      if (usernameExists) {
+        errors.username = "This username has been taken. Try another one";
+      }
+    }
+
+    if (!state.email.trim()) {
+      errors.email = "Enter email";
+    } else if (emailRegex.test(state.email.trim())) {
+      errors.email = "Enter a valid email address";
+    } else {
+      const emailExists = await getEmail(state.username.trim());
+
+      if (emailExists) {
+        errors.email = "This email has been taken. Try another one";
+      }
+    }
+
+    if (!state.phoneNumber.trim()) {
+      errors.phoneNumber = "Enter phone number";
+    } else if (phoneRegex.test(state.phoneNumber.trim())) {
+      errors.phoneNumber = "Enter a valid phone number";
+    } else {
+      const numberExists = await getPhoneNumber(state.username.trim());
+
+      if (numberExists) {
+        errors.phoneNumber =
+          "This phone number has been taken. Try another one";
+      }
+    }
+
+    if (!state.password) {
+      errors.password = "Enter password";
+    } else if (
+      state.password.length < 6 ||
+      !/[A-Z]/.test(state.password) ||
+      !/[\d]/.test(state.password) ||
+      !/[^a-z\d]/i.test(state.password)
+    ) {
+      errors.password =
+        "Password must have an uppercase letter, a number, a symbol and be at least 6 characters";
+    }
+
+    if (!state.confirmPassword) {
+      errors.confirmPassword = "Enter password confirmation";
+    } else if (state.password && state.password !== state.confirmPassword) {
+      errors.confirmPassword =
+        "Passwords do not match";
+    }
+
+    setErrors(s => ({...s, ...errors}));
+
     if (
-      !errors.firstName ||
+      errors.firstName ||
       errors.lastName ||
       errors.gender ||
       errors.username ||
@@ -244,7 +311,7 @@ const App = () => {
                       "Username can only contain alphabets, numbers and underscore",
                   });
                 } else {
-                  const usernameExists = await getUsername(value);
+                  const usernameExists = await getUsername(value.trim());
 
                   if (usernameExists) {
                     setErrors({
@@ -287,7 +354,7 @@ const App = () => {
                     email: "Enter a valid email address",
                   });
                 } else {
-                  const emailExists = await getEmail(value);
+                  const emailExists = await getEmail(value.trim());
 
                   if (emailExists) {
                     setErrors({
@@ -333,7 +400,7 @@ const App = () => {
                     phoneNumber: "Enter a valid phone number",
                   });
                 } else {
-                  const numberExists = await getPhoneNumber(value);
+                  const numberExists = await getPhoneNumber(value.trim());
 
                   if (numberExists) {
                     setErrors({
