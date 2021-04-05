@@ -1,6 +1,15 @@
 import { useState } from "react";
 import Button from "./Components/Button";
-import { getEmail, getPhoneNumber, getUsername } from "./service";
+import {
+  submitHandler,
+  validateConfPassword,
+  validateEmail,
+  validateFirstName,
+  validateLastName,
+  validatePassword,
+  validatePhoneNumber,
+  validateUsername,
+} from "./validator";
 
 const App = () => {
   const [visibility, setVisibility] = useState(false);
@@ -117,99 +126,6 @@ const App = () => {
     });
   };
 
-  const submitHandler = async e => {
-    e.preventDefault();
-
-    const errors = {};
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-    const phoneRegex = /^(\+)?\s?\(?\d{1,4}\)?\s?\d{9,}$/;
-
-    if (!state.firstName.trim()) {
-      errors.firstName = "Enter first name";
-    }
-
-    if (!state.lastName.trim()) {
-      errors.lastName = "Enter last name";
-    }
-
-    if (!state.gender) {
-      errors.gender = "Select your gender";
-    }
-
-    if (!state.username.trim()) {
-      errors.username = "Enter username";
-    } else if (/[^\w]/.test(state.username.trim())) {
-      errors.username =
-        "Username can only contain alphabets, numbers and underscore";
-    } else {
-      const usernameExists = await getUsername(state.username.trim());
-
-      if (usernameExists) {
-        errors.username = "This username has been taken. Try another one";
-      }
-    }
-
-    if (!state.email.trim()) {
-      errors.email = "Enter email";
-    } else if (!emailRegex.test(state.email.trim())) {
-      errors.email = "Enter a valid email address";
-    } else {
-      const emailExists = await getEmail(state.username.trim());
-
-      if (emailExists) {
-        errors.email = "This email has been taken. Try another one";
-      }
-    }
-
-    if (!state.phoneNumber.trim()) {
-      errors.phoneNumber = "Enter phone number";
-    } else if (!phoneRegex.test(state.phoneNumber.trim())) {
-      errors.phoneNumber = "Enter a valid phone number";
-    } else {
-      const numberExists = await getPhoneNumber(state.username.trim());
-
-      if (numberExists) {
-        errors.phoneNumber =
-          "This phone number has been taken. Try another one";
-      }
-    }
-
-    if (!state.password) {
-      errors.password = "Enter password";
-    } else if (
-      state.password.length < 6 ||
-      !/[A-Z]/.test(state.password) ||
-      !/[\d]/.test(state.password) ||
-      !/[^a-z\d]/i.test(state.password)
-    ) {
-      errors.password =
-        "Password must have an uppercase letter, a number, a symbol and be at least 6 characters";
-    }
-
-    if (!state.confirmPassword) {
-      errors.confirmPassword = "Enter password confirmation";
-    } else if (state.password !== state.confirmPassword) {
-      errors.confirmPassword = "Passwords do not match";
-    }
-
-    setErrors(s => ({ ...s, ...errors }));
-
-    if (
-      errors.firstName ||
-      errors.lastName ||
-      errors.gender ||
-      errors.username ||
-      errors.email ||
-      errors.phoneNumber ||
-      errors.password ||
-      errors.confirmPassword
-    ) {
-      return;
-    }
-
-    setIsValid(true);
-  };
-
   return (
     <div className="container">
       {isValid ? (
@@ -234,7 +150,10 @@ const App = () => {
           </footer>
         </div>
       ) : (
-        <form noValidate onSubmit={submitHandler}>
+        <form
+          noValidate
+          onSubmit={e => submitHandler({ e, state, setErrors, setIsValid })}
+        >
           <div className="form-group">
             <div
               className={
@@ -249,15 +168,7 @@ const App = () => {
                 placeholder="First Name"
                 onChange={handleChange}
                 onFocus={handleFocus}
-                onBlur={e => {
-                  const { value } = e.target;
-
-                  if (!value.trim()) {
-                    setErrors({ ...errors, firstName: "Enter first name" });
-                  }
-
-                  handleBlur(e);
-                }}
+                onBlur={e => validateFirstName(e, setErrors, handleBlur)}
                 value={state.firstName}
               />
               {errors.firstName && (
@@ -277,15 +188,7 @@ const App = () => {
                 placeholder="Last Name"
                 onChange={handleChange}
                 onFocus={handleFocus}
-                onBlur={e => {
-                  const { value } = e.target;
-
-                  if (!value.trim()) {
-                    setErrors({ ...errors, lastName: "Enter last name" });
-                  }
-
-                  handleBlur(e);
-                }}
+                onBlur={e => validateLastName(e, setErrors, handleBlur)}
                 value={state.lastName}
               />
               {errors.lastName && (
@@ -340,31 +243,7 @@ const App = () => {
                 autoComplete="on"
                 onChange={handleChange}
                 onFocus={handleFocus}
-                onBlur={async e => {
-                  const { value } = e.target;
-
-                  if (!value.trim()) {
-                    setErrors({ ...errors, username: "Enter username" });
-                  } else if (/[^\w]/.test(value.trim())) {
-                    setErrors({
-                      ...errors,
-                      username:
-                        "Username can only contain alphabets, numbers and underscore",
-                    });
-                  } else {
-                    const usernameExists = await getUsername(value.trim());
-
-                    if (usernameExists) {
-                      setErrors({
-                        ...errors,
-                        username:
-                          "This username has been taken. Try another one",
-                      });
-                    }
-                  }
-
-                  handleBlur(e);
-                }}
+                onBlur={e => validateUsername(e, setErrors, handleBlur)}
                 value={state.username}
               />
               {errors.username && (
@@ -386,30 +265,7 @@ const App = () => {
                 placeholder="E-mail"
                 onChange={handleChange}
                 onFocus={handleFocus}
-                onBlur={async e => {
-                  const { value } = e.target;
-                  const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-
-                  if (!value.trim()) {
-                    setErrors({ ...errors, email: "Enter email" });
-                  } else if (!regex.test(value.trim())) {
-                    setErrors({
-                      ...errors,
-                      email: "Enter a valid email address",
-                    });
-                  } else {
-                    const emailExists = await getEmail(value.trim());
-
-                    if (emailExists) {
-                      setErrors({
-                        ...errors,
-                        email: "This email has been taken. Try another one",
-                      });
-                    }
-                  }
-
-                  handleBlur(e);
-                }}
+                onBlur={e => validateEmail(e, setErrors, handleBlur)}
                 value={state.email}
               />
               {errors.email && <p className="error__box">{errors.email}</p>}
@@ -432,34 +288,7 @@ const App = () => {
                   handleChange(e);
                 }}
                 onFocus={handleFocus}
-                onBlur={async e => {
-                  const { value } = e.target;
-                  const regex = /^(\+)?\s?\(?\d{1,4}\)?\s?\d{9,}$/;
-
-                  if (!value.trim()) {
-                    setErrors({
-                      ...errors,
-                      phoneNumber: "Enter phone number",
-                    });
-                  } else if (!regex.test(value.trim())) {
-                    setErrors({
-                      ...errors,
-                      phoneNumber: "Enter a valid phone number",
-                    });
-                  } else {
-                    const numberExists = await getPhoneNumber(value.trim());
-
-                    if (numberExists) {
-                      setErrors({
-                        ...errors,
-                        phoneNumber:
-                          "This phone number has been taken. Try another one",
-                      });
-                    }
-                  }
-
-                  handleBlur(e);
-                }}
+                onBlur={e => validatePhoneNumber(e, setErrors, handleBlur)}
                 value={state.phoneNumber}
               />
               {errors.phoneNumber && (
@@ -482,26 +311,7 @@ const App = () => {
                   placeholder="Password"
                   autoComplete="new-password"
                   onFocus={passwordFocus}
-                  onBlur={e => {
-                    const { value } = e.target;
-
-                    if (!value) {
-                      setErrors({ ...errors, password: "Enter password" });
-                    } else if (
-                      value.length < 6 ||
-                      !/[A-Z]/.test(value) ||
-                      !/[\d]/.test(value) ||
-                      !/[^a-z\d]/i.test(value)
-                    ) {
-                      setErrors({
-                        ...errors,
-                        password:
-                          "Password must have an uppercase letter, a number, a symbol and be at least 6 characters",
-                      });
-                    }
-
-                    passwordBlur(e);
-                  }}
+                  onBlur={e => validatePassword(e, setErrors, passwordBlur)}
                   onChange={handleChange}
                   value={state.password}
                 />
@@ -533,21 +343,13 @@ const App = () => {
                   autoComplete="new-password"
                   onFocus={passwordFocus}
                   onBlur={e => {
-                    const { value } = e.target;
-
-                    if (!value) {
-                      setErrors({
-                        ...errors,
-                        confirmPassword: "Enter password confirmation",
-                      });
-                    } else if (state.password !== value) {
-                      setErrors({
-                        ...errors,
-                        confirmPassword: "Passwords do not match",
-                      });
-                    }
-
-                    passwordBlur(e);
+                    const { password } = state;
+                    validateConfPassword({
+                      e,
+                      password,
+                      setErrors,
+                      func: passwordBlur,
+                    });
                   }}
                   onChange={handleChange}
                   value={state.confirmPassword}
