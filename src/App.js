@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "./Components/Button";
 import {
-  submitHandler,
+  submitValidator,
   validateConfPassword,
   validateEmail,
   validateFirstName,
@@ -36,6 +36,10 @@ const App = () => {
     password: "",
     confirmPassword: "",
   });
+
+  // useEffect(() => {
+  //   setErrors(errors)
+  // }, [errors])
 
   const handleChange = e => {
     const { name, value, type } = e.target;
@@ -126,6 +130,31 @@ const App = () => {
     });
   };
 
+  const submitHandler = e => {
+    e.preventDefault();
+
+    const errors = {};
+
+    submitValidator(errors, state);
+
+    setErrors(errors);
+
+    if (
+      errors.firstName ||
+      errors.lastName ||
+      errors.gender ||
+      errors.username ||
+      errors.email ||
+      errors.phoneNumber ||
+      errors.password ||
+      errors.confirmPassword
+    ) {
+      return;
+    }
+
+    setIsValid(true);
+  };
+
   return (
     <div className="container">
       {isValid ? (
@@ -150,10 +179,7 @@ const App = () => {
           </footer>
         </div>
       ) : (
-        <form
-          noValidate
-          onSubmit={e => submitHandler({ e, state, setErrors, setIsValid })}
-        >
+        <form noValidate onSubmit={submitHandler}>
           <div className="form-group">
             <div
               className={

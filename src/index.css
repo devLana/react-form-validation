@@ -168,6 +168,7 @@ input[type=radio]:checked {
 }
 
 .toggle-password__container {
+  color: #060;
   font-size: 1.6rem;
   width: 3.5rem;
   height: 3.5rem;

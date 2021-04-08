@@ -1,9 +1,6 @@
 import { getUsername, getEmail, getPhoneNumber } from "./service";
 
-export const submitHandler = async ({ e, state, setErrors, setIsValid }) => {
-  e.preventDefault();
-
-  const errors = {};
+export const submitValidator = async (errors, state) => {
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
   const phoneRegex = /^(\+)?\s?\(?\d{1,4}\)?\s?\d{9,}$/;
 
@@ -73,23 +70,6 @@ export const submitHandler = async ({ e, state, setErrors, setIsValid }) => {
   } else if (state.password !== state.confirmPassword) {
     errors.confirmPassword = "Passwords do not match";
   }
-
-  setErrors(s => ({ ...s, ...errors }));
-
-  if (
-    errors.firstName ||
-    errors.lastName ||
-    errors.gender ||
-    errors.username ||
-    errors.email ||
-    errors.phoneNumber ||
-    errors.password ||
-    errors.confirmPassword
-  ) {
-    return;
-  }
-
-  setIsValid(true);
 };
 
 export const validateFirstName = (e, setErrors, func) => {
