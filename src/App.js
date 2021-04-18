@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { Fragment, useState } from "react";
 import Button from "./Components/Button";
 import {
   submitValidator,
   validateConfPassword,
   validateEmail,
   validateFirstName,
+  validateImages,
   validateLastName,
   validatePassword,
   validatePhoneNumber,
@@ -24,6 +25,7 @@ const App = () => {
     phoneNumber: "",
     password: "",
     confirmPassword: "",
+    images: [],
   });
 
   const [errors, setErrors] = useState({
@@ -35,11 +37,8 @@ const App = () => {
     phoneNumber: "",
     password: "",
     confirmPassword: "",
+    images: "",
   });
-
-  // useEffect(() => {
-  //   setErrors(errors)
-  // }, [errors])
 
   const handleChange = e => {
     const { name, value, type } = e.target;
@@ -116,6 +115,11 @@ const App = () => {
     setVisibility(s => !s);
   };
 
+  const handleDelete = index => {
+    const images = state.images.filter((_, idx) => idx !== index);
+    setState(s => ({ ...s, images }));
+  };
+
   const goBack = () => {
     setIsValid(false);
     setState({
@@ -127,6 +131,7 @@ const App = () => {
       phoneNumber: "",
       password: "",
       confirmPassword: "",
+      images: [],
     });
   };
 
@@ -147,7 +152,8 @@ const App = () => {
       errors.email ||
       errors.phoneNumber ||
       errors.password ||
-      errors.confirmPassword
+      errors.confirmPassword ||
+      errors.images
     ) {
       return;
     }
@@ -164,14 +170,25 @@ const App = () => {
           </header>
           <div className="form--success__body">
             {Object.entries(state).map(([name, value], index) => (
-              <>
-                {name === "confirmPassword" ? null : (
-                  <p className="form--success__item" key={index}>
+              <Fragment key={`${name}-${index}`}>
+                {name === "images" ? (
+                  <ul className="form--success__images">
+                    {value.map((item, index) => (
+                      <li
+                        className="form--success__image"
+                        key={`${item.name}-${index}`}
+                      >
+                        <img src={URL.createObjectURL(item)} alt={item.name} />
+                      </li>
+                    ))}
+                  </ul>
+                ) : name === "confirmPassword" ? null : (
+                  <p className="form--success__item">
                     <strong>{name}:</strong>
-                    <span>{value}</span>
+                    <span>{value.trim()}</span>
                   </p>
                 )}
-              </>
+              </Fragment>
             ))}
           </div>
           <footer className="form--success__footer">
@@ -390,6 +407,66 @@ const App = () => {
               {errors.confirmPassword && (
                 <p className="error__box">{errors.confirmPassword}</p>
               )}
+            </div>
+          </div>
+          <div className="form-group">
+            <div className="form-control">
+              {state.images.length === 3 ? (
+                <label className="file-upload--disabled">
+                  <span role="button" id="upload__btn">
+                    <span className="upload__btn__img">
+                      <i className="far fa-image"></i>
+                    </span>
+                    <span className="upload__btn__txt">
+                      Upload Profile Picture
+                    </span>
+                  </span>
+                </label>
+              ) : (
+                <label htmlFor="file-upload">
+                  <span role="button" id="upload__btn">
+                    <span className="upload__btn__img">
+                      <i className="far fa-image"></i>
+                    </span>
+                    <span className="upload__btn__txt">
+                      Upload Profile Picture
+                    </span>
+                  </span>
+                </label>
+              )}
+              <input
+                id="file-upload"
+                type="file"
+                name="file"
+                multiple
+                onChange={e =>
+                  validateImages({ e, setErrors, state, setState })
+                }
+                accept="image/png, image/jpeg, image/gif"
+              />
+              {errors.images && <p className="error__box">{errors.images}</p>}
+              {state.images.length ? (
+                <ul className="image__preview">
+                  {state.images.map((image, index) => (
+                    <li key={`${image.name}-${index}`}>
+                      <div className="image__preview__container">
+                        <img
+                          src={URL.createObjectURL(image)}
+                          alt={image.name}
+                        />
+                      </div>
+                      <span className="image__preview__name">{image.name}</span>
+                      <span
+                        className="image__preview__delete-icon"
+                        onClick={() => handleDelete(index)}
+                        role="button"
+                      >
+                        <i className="fas fa-trash"></i>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
           </div>
           <div className="form-group">
