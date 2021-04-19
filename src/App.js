@@ -121,6 +121,7 @@ const App = () => {
   };
 
   const goBack = () => {
+    setVisibility(false)
     setIsValid(false);
     setState({
       firstName: "",

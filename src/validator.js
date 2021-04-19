@@ -196,34 +196,41 @@ export const validateConfPassword = ({ e, password, setErrors, func }) => {
 export const validateImages = ({e, setErrors, state, setState}) => {
   const { files } = e.target;
   const imageTypes = ["image/png", "image/jpeg", "image/gif"];
-  const fourMB = 4 * 1024 * 1024;
+  const maxSize = 4 * 1024 * 1024;
+  const limit = 3;
+  let size;
 
-  if (files.length > 3) {
+  if (maxSize < 1024) {
+    size = maxSize + " bytes";
+  } else if (maxSize >= 1024 && maxSize < 1048576) {
+    size = (maxSize / 1024).toFixed(1) + " KB";
+  } else if (maxSize >= 1048576) {
+    size = (maxSize / 1048576).toFixed(1) + " MB";
+  }
+
+  if (files.length > limit) {
     setErrors(s => ({
       ...s,
-      images: "You can only select 3 images",
+      images: `You can only select ${limit} images`,
+    }));
+  } else if (files.length + state.images.length > limit) {
+    setErrors(s => ({
+      ...s,
+      images: `You can only select ${limit} images`,
     }));
   } else {
     const newImages = Array.from(files);
 
     newImages.forEach(image => {
-      if (
-        (state.images.length === 1 && files.length > 2) ||
-        (state.images.length === 2 && files.length > 1)
-      ) {
-        setErrors(s => ({
-          ...s,
-          images: "You can only select 3 images",
-        }));
-      } else if (!imageTypes.includes(image.type)) {
+      if (!imageTypes.includes(image.type)) {
         setErrors(s => ({
           ...s,
           images: "Selected images can only be of type png/jpg/gif",
         }));
-      } else if (image.size > fourMB) {
+      } else if (image.size > maxSize) {
         setErrors(s => ({
           ...s,
-          images: "Selected images cannot be more than 4MB in size",
+          images: `Selected images cannot exceed ${size}`,
         }));
       } else {
         setState(s => ({ ...s, images: [...s.images, image] }));
