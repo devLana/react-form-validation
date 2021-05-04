@@ -193,6 +193,7 @@ label[for="file-upload"] {
   transition: 0.15s ease-in-out;
   margin-bottom: 0;
   background-color: rgba(0, 255, 0, 0.4);
+  user-select: none;
 }
 
 label[for="file-upload"]:hover {

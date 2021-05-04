@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useRef } from "react";
 import Button from "./Components/Button";
 import {
   submitValidator,
@@ -40,14 +40,15 @@ const App = () => {
     images: "",
   });
 
+  const radioContainer = useRef();
+  const passwordContainer = useRef();
+  const confirmPasswordContainer = useRef();
+
   const handleChange = e => {
     const { name, value, type } = e.target;
 
     if (type === "radio") {
-      const container = document.querySelector(
-        ".form-group:nth-of-type(2) > .form-control"
-      );
-      container.classList.remove("form-error");
+      radioContainer.current.classList.remove("form-error");
       setErrors({ ...errors, gender: "" });
     }
 
@@ -56,6 +57,7 @@ const App = () => {
 
   const handleFocus = e => {
     const { name, parentElement } = e.target;
+
     parentElement.classList.remove("form-error");
     setErrors({ ...errors, [name]: "" });
   };
@@ -71,20 +73,12 @@ const App = () => {
   const passwordFocus = e => {
     const { name, parentElement } = e.target;
 
-    const containerOne = document.querySelector(
-      ".form-group:nth-of-type(5) > .form-control:first-child"
-    );
-
-    const containerTwo = document.querySelector(
-      ".form-group:nth-of-type(5) > .form-control:last-child"
-    );
-
     parentElement.classList.add("password--active");
 
     if (name === "password") {
-      containerOne.classList.remove("form-error");
+      passwordContainer.current.classList.remove("form-error");
     } else if (name === "confirmPassword") {
-      containerTwo.classList.remove("form-error");
+      confirmPasswordContainer.current.classList.remove("form-error");
     }
 
     setErrors({ ...errors, [name]: "" });
@@ -93,20 +87,12 @@ const App = () => {
   const passwordBlur = e => {
     const { name, parentElement } = e.target;
 
-    const containerOne = document.querySelector(
-      ".form-group:nth-of-type(5) > .form-control:first-child"
-    );
-
-    const containerTwo = document.querySelector(
-      ".form-group:nth-of-type(5) > .form-control:last-child"
-    );
-
     parentElement.classList.remove("password--active");
 
     if (name === "password" && errors[name]) {
-      containerOne.classList.add("form-error");
+      passwordContainer.current.classList.add("form-error");
     } else if (name === "confirmPassword" && errors[name]) {
-      containerTwo.classList.add("form-error");
+      confirmPasswordContainer.current.classList.add("form-error");
     }
   };
 
@@ -121,7 +107,7 @@ const App = () => {
   };
 
   const goBack = () => {
-    setVisibility(false)
+    setVisibility(false);
     setIsValid(false);
     setState({
       firstName: "",
@@ -242,6 +228,7 @@ const App = () => {
           </div>
           <div className="form-group">
             <div
+              ref={radioContainer}
               className={
                 errors.gender ? "form-control form-error" : "form-control"
               }
@@ -342,6 +329,7 @@ const App = () => {
           </div>
           <div className="form-group">
             <div
+              ref={passwordContainer}
               className={
                 errors.password ? "form-control form-error" : "form-control"
               }
@@ -371,6 +359,7 @@ const App = () => {
               )}
             </div>
             <div
+              ref={confirmPasswordContainer}
               className={
                 errors.confirmPassword
                   ? "form-control form-error"
