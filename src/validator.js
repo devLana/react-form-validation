@@ -76,33 +76,33 @@ export const submitValidator = async state => {
   return errors;
 };
 
-export const validateFirstName = (e, errorValidator, func) => {
+export const validateFirstName = (e, setErrorsObj, func) => {
   const { name, value } = e.target;
 
   if (!value.trim()) {
-    errorValidator(name, "Enter first name");
+    setErrorsObj(name, "Enter first name");
   }
 
   func(e);
 };
 
-export const validateLastName = (e, errorValidator, func) => {
+export const validateLastName = (e, setErrorsObj, func) => {
   const { name, value } = e.target;
 
   if (!value.trim()) {
-    errorValidator(name, "Enter last name");
+    setErrorsObj(name, "Enter last name");
   }
 
   func(e);
 };
 
-export const validateUsername = async (e, errorValidator, func) => {
+export const validateUsername = async (e, setErrorsObj, func) => {
   const { name, value } = e.target;
 
   if (!value.trim()) {
-    errorValidator(name, "Enter username");
+    setErrorsObj(name, "Enter username");
   } else if (/[^\w]/.test(value.trim())) {
-    errorValidator(
+    setErrorsObj(
       name,
       "Username can only contain alphabets, numbers and underscore"
     );
@@ -110,63 +110,63 @@ export const validateUsername = async (e, errorValidator, func) => {
     const usernameExists = await getUsername(value.trim());
 
     if (usernameExists) {
-      errorValidator(name, "This username has been taken. Try another one");
+      setErrorsObj(name, "This username has been taken. Try another one");
     }
   }
 
   func(e);
 };
 
-export const validateEmail = async (e, errorValidator, func) => {
+export const validateEmail = async (e, setErrorsObj, func) => {
   const { name, value } = e.target;
   const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 
   if (!value.trim()) {
-    errorValidator(name, "Enter email");
+    setErrorsObj(name, "Enter email");
   } else if (!regex.test(value.trim())) {
-    errorValidator(name, "Enter a valid email address");
+    setErrorsObj(name, "Enter a valid email address");
   } else {
     const emailExists = await getEmail(value.trim());
 
     if (emailExists) {
-      errorValidator(name, "This email has been taken. Try another one");
+      setErrorsObj(name, "This email has been taken. Try another one");
     }
   }
 
   func(e);
 };
 
-export const validatePhoneNumber = async (e, errorValidator, func) => {
+export const validatePhoneNumber = async (e, setErrorsObj, func) => {
   const { name, value } = e.target;
   const regex = /^(\+)?\s?\(?\d{1,4}\)?\s?\d{9,}$/;
 
   if (!value.trim()) {
-    errorValidator(name, "Enter phone number");
+    setErrorsObj(name, "Enter phone number");
   } else if (!regex.test(value.trim())) {
-    errorValidator(name, "Enter a valid phone number");
+    setErrorsObj(name, "Enter a valid phone number");
   } else {
     const numberExists = await getPhoneNumber(value.trim());
 
     if (numberExists) {
-      errorValidator(name, "This phone number has been taken. Try another one");
+      setErrorsObj(name, "This phone number has been taken. Try another one");
     }
   }
 
   func(e);
 };
 
-export const validatePassword = (e, errorValidator, func) => {
+export const validatePassword = (e, setErrorsObj, func) => {
   const { name, value } = e.target;
 
   if (!value) {
-    errorValidator(name, "Enter password");
+    setErrorsObj(name, "Enter password");
   } else if (
     value.length < 6 ||
     !/[A-Z]/.test(value) ||
     !/[\d]/.test(value) ||
     !/[^a-z\d]/i.test(value)
   ) {
-    errorValidator(
+    setErrorsObj(
       name,
       "Password must have an uppercase letter, a number, a symbol and be at least 6 characters"
     );
@@ -175,19 +175,19 @@ export const validatePassword = (e, errorValidator, func) => {
   func(e);
 };
 
-export const validateConfPassword = ({ e, password, errorValidator, func }) => {
+export const validateConfPassword = ({ e, password, setErrorsObj, func }) => {
   const { name, value } = e.target;
 
   if (!value) {
-    errorValidator(name, "Enter password confirmation");
+    setErrorsObj(name, "Enter password confirmation");
   } else if (password !== value) {
-    errorValidator(name, "Passwords do not match");
+    setErrorsObj(name, "Passwords do not match");
   }
 
   func(e);
 };
 
-export const validateImages = ({ e, errorValidator, state, setState }) => {
+export const validateImages = ({ e, setErrorsObj, state, setState }) => {
   const { name, files } = e.target;
   const imageTypes = ["image/png", "image/jpeg", "image/gif"];
   const maxSize = 4 * 1024 * 1024;
@@ -203,20 +203,20 @@ export const validateImages = ({ e, errorValidator, state, setState }) => {
   }
 
   if (files.length > limit) {
-    errorValidator(name, `You can only select ${limit} images`);
+    setErrorsObj(name, `You can only select ${limit} files`);
   } else if (files.length + state.images.length > limit) {
-    errorValidator(name, `You can only select ${limit} images`);
+    setErrorsObj(name, `You can only select ${limit} files`);
   } else {
     const newImages = Array.from(files);
 
     newImages.forEach(image => {
       if (!imageTypes.includes(image.type)) {
-        errorValidator(name, "Selected images can only be of type png/jpg/gif");
+        setErrorsObj(name, "Selected files can only be of type png/jpg/gif");
       } else if (image.size > maxSize) {
-        errorValidator(name, `Selected images cannot exceed ${size}`);
+        setErrorsObj(name, `Selected images cannot exceed ${size}`);
       } else {
         setState(s => ({ ...s, images: [...s.images, image] }));
-        errorValidator(name, "");
+        setErrorsObj(name, "");
       }
     });
   }
