@@ -106,6 +106,8 @@ const App = () => {
     setState(s => ({ ...s, images }));
   };
 
+  const errorValidator = (name, str) => setErrors(s => ({ ...s, [name]: str }));
+
   const goBack = () => {
     setVisibility(false);
     setIsValid(false);
@@ -122,12 +124,10 @@ const App = () => {
     });
   };
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
 
-    const errors = {};
-
-    submitValidator(errors, state);
+    const errors = await submitValidator(state);
 
     setErrors(errors);
 
@@ -198,7 +198,7 @@ const App = () => {
                 placeholder="First Name"
                 onChange={handleChange}
                 onFocus={handleFocus}
-                onBlur={e => validateFirstName(e, setErrors, handleBlur)}
+                onBlur={e => validateFirstName(e, errorValidator, handleBlur)}
                 value={state.firstName}
               />
               {errors.firstName && (
@@ -218,7 +218,7 @@ const App = () => {
                 placeholder="Last Name"
                 onChange={handleChange}
                 onFocus={handleFocus}
-                onBlur={e => validateLastName(e, setErrors, handleBlur)}
+                onBlur={e => validateLastName(e, errorValidator, handleBlur)}
                 value={state.lastName}
               />
               {errors.lastName && (
@@ -274,7 +274,7 @@ const App = () => {
                 autoComplete="on"
                 onChange={handleChange}
                 onFocus={handleFocus}
-                onBlur={e => validateUsername(e, setErrors, handleBlur)}
+                onBlur={e => validateUsername(e, errorValidator, handleBlur)}
                 value={state.username}
               />
               {errors.username && (
@@ -296,7 +296,7 @@ const App = () => {
                 placeholder="E-mail"
                 onChange={handleChange}
                 onFocus={handleFocus}
-                onBlur={e => validateEmail(e, setErrors, handleBlur)}
+                onBlur={e => validateEmail(e, errorValidator, handleBlur)}
                 value={state.email}
               />
               {errors.email && <p className="error__box">{errors.email}</p>}
@@ -319,7 +319,7 @@ const App = () => {
                   handleChange(e);
                 }}
                 onFocus={handleFocus}
-                onBlur={e => validatePhoneNumber(e, setErrors, handleBlur)}
+                onBlur={e => validatePhoneNumber(e, errorValidator, handleBlur)}
                 value={state.phoneNumber}
               />
               {errors.phoneNumber && (
@@ -343,7 +343,9 @@ const App = () => {
                   placeholder="Password"
                   autoComplete="new-password"
                   onFocus={passwordFocus}
-                  onBlur={e => validatePassword(e, setErrors, passwordBlur)}
+                  onBlur={e =>
+                    validatePassword(e, errorValidator, passwordBlur)
+                  }
                   onChange={handleChange}
                   value={state.password}
                 />
@@ -377,10 +379,11 @@ const App = () => {
                   onFocus={passwordFocus}
                   onBlur={e => {
                     const { password } = state;
+
                     validateConfPassword({
                       e,
                       password,
-                      setErrors,
+                      errorValidator,
                       func: passwordBlur,
                     });
                   }}
@@ -427,10 +430,10 @@ const App = () => {
               <input
                 id="file-upload"
                 type="file"
-                name="file"
+                name="images"
                 multiple
                 onChange={e =>
-                  validateImages({ e, setErrors, state, setState })
+                  validateImages({ e, errorValidator, state, setState })
                 }
                 accept="image/png, image/jpeg, image/gif"
               />

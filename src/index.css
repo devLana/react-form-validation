@@ -45,6 +45,10 @@ form {
   margin-bottom: 2rem;
 }
 
+.form-group:nth-child(6) {
+  margin-bottom: 5rem;
+}
+
 .form-group:last-of-type,
 .form-control:last-child {
   margin-bottom: 0;

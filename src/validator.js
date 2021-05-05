@@ -1,8 +1,10 @@
 import { getUsername, getEmail, getPhoneNumber } from "./service";
 
-export const submitValidator = async (errors, state) => {
+export const submitValidator = async state => {
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
   const phoneRegex = /^(\+)?\s?\(?\d{1,4}\)?\s?\d{9,}$/;
+
+  const errors = {};
 
   if (!state.firstName.trim()) {
     errors.firstName = "Enter first name";
@@ -14,6 +16,24 @@ export const submitValidator = async (errors, state) => {
 
   if (!state.gender) {
     errors.gender = "Select your gender";
+  }
+
+  if (!state.password) {
+    errors.password = "Enter password";
+  } else if (
+    state.password.length < 6 ||
+    !/[A-Z]/.test(state.password) ||
+    !/[\d]/.test(state.password) ||
+    !/[^a-z\d]/i.test(state.password)
+  ) {
+    errors.password =
+      "Password must have an uppercase letter, a number, a symbol and be at least 6 characters";
+  }
+
+  if (!state.confirmPassword) {
+    errors.confirmPassword = "Enter password confirmation";
+  } else if (state.password !== state.confirmPassword) {
+    errors.confirmPassword = "Passwords do not match";
   }
 
   if (!state.username.trim()) {
@@ -34,7 +54,7 @@ export const submitValidator = async (errors, state) => {
   } else if (!emailRegex.test(state.email.trim())) {
     errors.email = "Enter a valid email address";
   } else {
-    const emailExists = await getEmail(state.username.trim());
+    const emailExists = await getEmail(state.email.trim());
 
     if (emailExists) {
       errors.email = "This email has been taken. Try another one";
@@ -46,155 +66,129 @@ export const submitValidator = async (errors, state) => {
   } else if (!phoneRegex.test(state.phoneNumber.trim())) {
     errors.phoneNumber = "Enter a valid phone number";
   } else {
-    const numberExists = await getPhoneNumber(state.username.trim());
+    const numberExists = await getPhoneNumber(state.phoneNumber.trim());
 
     if (numberExists) {
       errors.phoneNumber = "This phone number has been taken. Try another one";
     }
   }
 
-  if (!state.password) {
-    errors.password = "Enter password";
-  } else if (
-    state.password.length < 6 ||
-    !/[A-Z]/.test(state.password) ||
-    !/[\d]/.test(state.password) ||
-    !/[^a-z\d]/i.test(state.password)
-  ) {
-    errors.password =
-      "Password must have an uppercase letter, a number, a symbol and be at least 6 characters";
-  }
-
-  if (!state.confirmPassword) {
-    errors.confirmPassword = "Enter password confirmation";
-  } else if (state.password !== state.confirmPassword) {
-    errors.confirmPassword = "Passwords do not match";
-  }
+  return errors;
 };
 
-export const validateFirstName = (e, setErrors, func) => {
-  const { value } = e.target;
+export const validateFirstName = (e, errorValidator, func) => {
+  const { name, value } = e.target;
 
   if (!value.trim()) {
-    setErrors(s => ({ ...s, firstName: "Enter first name" }));
+    errorValidator(name, "Enter first name");
   }
 
   func(e);
 };
 
-export const validateLastName = (e, setErrors, func) => {
-  const { value } = e.target;
+export const validateLastName = (e, errorValidator, func) => {
+  const { name, value } = e.target;
 
   if (!value.trim()) {
-    setErrors(s => ({ ...s, lastName: "Enter last name" }));
+    errorValidator(name, "Enter last name");
   }
 
   func(e);
 };
 
-export const validateUsername = async (e, setErrors, func) => {
-  const { value } = e.target;
+export const validateUsername = async (e, errorValidator, func) => {
+  const { name, value } = e.target;
 
   if (!value.trim()) {
-    setErrors(s => ({ ...s, username: "Enter username" }));
+    errorValidator(name, "Enter username");
   } else if (/[^\w]/.test(value.trim())) {
-    setErrors(s => ({
-      ...s,
-      username: "Username can only contain alphabets, numbers and underscore",
-    }));
+    errorValidator(
+      name,
+      "Username can only contain alphabets, numbers and underscore"
+    );
   } else {
     const usernameExists = await getUsername(value.trim());
 
     if (usernameExists) {
-      setErrors(s => ({
-        ...s,
-        username: "This username has been taken. Try another one",
-      }));
+      errorValidator(name, "This username has been taken. Try another one");
     }
   }
 
   func(e);
 };
 
-export const validateEmail = async (e, setErrors, func) => {
-  const { value } = e.target;
+export const validateEmail = async (e, errorValidator, func) => {
+  const { name, value } = e.target;
   const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 
   if (!value.trim()) {
-    setErrors(s => ({ ...s, email: "Enter email" }));
+    errorValidator(name, "Enter email");
   } else if (!regex.test(value.trim())) {
-    setErrors(s => ({ ...s, email: "Enter a valid email address" }));
+    errorValidator(name, "Enter a valid email address");
   } else {
     const emailExists = await getEmail(value.trim());
 
     if (emailExists) {
-      setErrors(s => ({
-        ...s,
-        email: "This email has been taken. Try another one",
-      }));
+      errorValidator(name, "This email has been taken. Try another one");
     }
   }
 
   func(e);
 };
 
-export const validatePhoneNumber = async (e, setErrors, func) => {
-  const { value } = e.target;
+export const validatePhoneNumber = async (e, errorValidator, func) => {
+  const { name, value } = e.target;
   const regex = /^(\+)?\s?\(?\d{1,4}\)?\s?\d{9,}$/;
 
   if (!value.trim()) {
-    setErrors(s => ({ ...s, phoneNumber: "Enter phone number" }));
+    errorValidator(name, "Enter phone number");
   } else if (!regex.test(value.trim())) {
-    setErrors(s => ({ ...s, phoneNumber: "Enter a valid phone number" }));
+    errorValidator(name, "Enter a valid phone number");
   } else {
     const numberExists = await getPhoneNumber(value.trim());
 
     if (numberExists) {
-      setErrors(s => ({
-        ...s,
-        phoneNumber: "This phone number has been taken. Try another one",
-      }));
+      errorValidator(name, "This phone number has been taken. Try another one");
     }
   }
 
   func(e);
 };
 
-export const validatePassword = (e, setErrors, func) => {
-  const { value } = e.target;
+export const validatePassword = (e, errorValidator, func) => {
+  const { name, value } = e.target;
 
   if (!value) {
-    setErrors(s => ({ ...s, password: "Enter password" }));
+    errorValidator(name, "Enter password");
   } else if (
     value.length < 6 ||
     !/[A-Z]/.test(value) ||
     !/[\d]/.test(value) ||
     !/[^a-z\d]/i.test(value)
   ) {
-    setErrors(s => ({
-      ...s,
-      password:
-        "Password must have an uppercase letter, a number, a symbol and be at least 6 characters",
-    }));
+    errorValidator(
+      name,
+      "Password must have an uppercase letter, a number, a symbol and be at least 6 characters"
+    );
   }
 
   func(e);
 };
 
-export const validateConfPassword = ({ e, password, setErrors, func }) => {
-  const { value } = e.target;
+export const validateConfPassword = ({ e, password, errorValidator, func }) => {
+  const { name, value } = e.target;
 
   if (!value) {
-    setErrors(s => ({ ...s, confirmPassword: "Enter password confirmation" }));
+    errorValidator(name, "Enter password confirmation");
   } else if (password !== value) {
-    setErrors(s => ({ ...s, confirmPassword: "Passwords do not match" }));
+    errorValidator(name, "Passwords do not match");
   }
 
   func(e);
 };
 
-export const validateImages = ({e, setErrors, state, setState}) => {
-  const { files } = e.target;
+export const validateImages = ({ e, errorValidator, state, setState }) => {
+  const { name, files } = e.target;
   const imageTypes = ["image/png", "image/jpeg", "image/gif"];
   const maxSize = 4 * 1024 * 1024;
   const limit = 3;
@@ -209,32 +203,20 @@ export const validateImages = ({e, setErrors, state, setState}) => {
   }
 
   if (files.length > limit) {
-    setErrors(s => ({
-      ...s,
-      images: `You can only select ${limit} images`,
-    }));
+    errorValidator(name, `You can only select ${limit} images`);
   } else if (files.length + state.images.length > limit) {
-    setErrors(s => ({
-      ...s,
-      images: `You can only select ${limit} images`,
-    }));
+    errorValidator(name, `You can only select ${limit} images`);
   } else {
     const newImages = Array.from(files);
 
     newImages.forEach(image => {
       if (!imageTypes.includes(image.type)) {
-        setErrors(s => ({
-          ...s,
-          images: "Selected images can only be of type png/jpg/gif",
-        }));
+        errorValidator(name, "Selected images can only be of type png/jpg/gif");
       } else if (image.size > maxSize) {
-        setErrors(s => ({
-          ...s,
-          images: `Selected images cannot exceed ${size}`,
-        }));
+        errorValidator(name, `Selected images cannot exceed ${size}`);
       } else {
         setState(s => ({ ...s, images: [...s.images, image] }));
-        setErrors(s => ({ ...s, images: "" }));
+        errorValidator(name, "");
       }
     });
   }
