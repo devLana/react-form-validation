@@ -188,36 +188,49 @@ export const validateConfPassword = ({ e, password, setErrorsObj, func }) => {
 };
 
 export const validateImages = ({ e, setErrorsObj, state, setState }) => {
-  const { name, files } = e.target;
+  const { target, dataTransfer } = e;
   const imageTypes = ["image/png", "image/jpeg", "image/gif"];
   const maxSize = 4 * 1024 * 1024;
+  const size = `${maxSize / (1024 * 1024).toFixed(1)}MB`;
   const limit = 3;
-  let size;
+  let name, files;
 
-  if (maxSize < 1024) {
-    size = maxSize + " bytes";
-  } else if (maxSize >= 1024 && maxSize < 1048576) {
-    size = (maxSize / 1024).toFixed(1) + " KB";
-  } else if (maxSize >= 1048576) {
-    size = (maxSize / 1048576).toFixed(1) + " MB";
+  if (dataTransfer) {
+    files = dataTransfer.files;
+    name = "images";
+  } else {
+    files = target.files;
+    name = target.name;
   }
 
-  if (files.length > limit) {
-    setErrorsObj(name, `You can only select ${limit} files`);
-  } else if (files.length + state.images.length > limit) {
+  // if (maxSize < 1024) {
+  //   size = `${maxSize} bytes`;
+  // } else if (maxSize >= 1024 && maxSize < 1048576) {
+  //   size = `${(maxSize / 1024).toFixed(1)} KB`;
+  // } else if (maxSize >= 1048576) {
+  //   size = `${(maxSize / 1048576).toFixed(1)} MB`;
+  // }
+
+  if (files.length > limit || files.length + state.images.length > limit) {
     setErrorsObj(name, `You can only select ${limit} files`);
   } else {
-    const newImages = Array.from(files);
+    let newImages = [];
 
-    newImages.forEach(image => {
-      if (!imageTypes.includes(image.type)) {
+    for (let i = 0; i < files.length; i++) {
+      if (!imageTypes.includes(files[i].type)) {
         setErrorsObj(name, "Selected files can only be of type png/jpg/gif");
-      } else if (image.size > maxSize) {
-        setErrorsObj(name, `Selected images cannot exceed ${size}`);
-      } else {
-        setState(s => ({ ...s, images: [...s.images, image] }));
-        setErrorsObj(name, "");
+        return;
       }
-    });
+
+      if (files[i].size > maxSize) {
+        setErrorsObj(name, `Selected images cannot exceed ${size}`);
+        return;
+      }
+
+      newImages = [...newImages, files[i]];
+    }
+
+    setState({ ...state, images: [...state.images, ...newImages] });
+    setErrorsObj(name, "");
   }
 };

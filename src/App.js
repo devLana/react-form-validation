@@ -40,9 +40,36 @@ const App = () => {
     images: "",
   });
 
+  const setErrorsObj = (name, str) => setErrors(s => ({ ...s, [name]: str }));
+
   const radioContainer = useRef();
   const passwordContainer = useRef();
   const confirmPasswordContainer = useRef();
+  const fileInput = useRef();
+
+  const handleFile = e => {
+    e.preventDefault();
+    fileInput.current.click();
+  };
+
+  const handleDragEnter = e => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
+  const handleDragOver = e => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
+  const handleDrop = e => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    validateImages({ e, setErrorsObj, state, setState });
+
+    e.dataTransfer.clearData();
+  };
 
   const handleChange = e => {
     const { name, value, type } = e.target;
@@ -105,8 +132,6 @@ const App = () => {
     const images = state.images.filter((_, idx) => idx !== index);
     setState(s => ({ ...s, images }));
   };
-
-  const setErrorsObj = (name, str) => setErrors(s => ({ ...s, [name]: str }));
 
   const goBack = () => {
     setVisibility(false);
@@ -343,9 +368,7 @@ const App = () => {
                   placeholder="Password"
                   autoComplete="new-password"
                   onFocus={passwordFocus}
-                  onBlur={e =>
-                    validatePassword(e, setErrorsObj, passwordBlur)
-                  }
+                  onBlur={e => validatePassword(e, setErrorsObj, passwordBlur)}
                   onChange={handleChange}
                   value={state.password}
                 />
@@ -405,40 +428,36 @@ const App = () => {
           <div className="form-group">
             <div className="form-control">
               {state.images.length === 3 ? (
-                <label className="file-upload--disabled">
-                  <span role="button" id="upload__btn">
-                    <span className="upload__btn__img">
-                      <i className="far fa-image"></i>
-                    </span>
-                    <span className="upload__btn__txt">
-                      Upload Profile Picture
-                    </span>
+                <div className="file-uploader file-uploader--disabled">
+                  <span className="file-uploader__btn__img">
+                    <i className="far fa-image"></i>
                   </span>
-                </label>
+                </div>
               ) : (
-                <label htmlFor="file-upload">
-                  <span role="button" id="upload__btn">
-                    <span className="upload__btn__img">
-                      <i className="far fa-image"></i>
-                    </span>
-                    <span className="upload__btn__txt">
-                      Upload Profile Picture
-                    </span>
+                <button
+                  className="file-uploader"
+                  onClick={handleFile}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragEnter={handleDragEnter}
+                >
+                  <span className="file-uploader__btn__img">
+                    <i className="far fa-image"></i>
                   </span>
-                </label>
+                </button>
               )}
               <input
-                id="file-upload"
+                ref={fileInput}
                 type="file"
                 name="images"
-                multiple
+                multiple={state.images.length >= 2 ? false : true}
                 onChange={e =>
                   validateImages({ e, setErrorsObj, state, setState })
                 }
                 accept="image/png, image/jpeg, image/gif"
               />
               {errors.images && <p className="error__box">{errors.images}</p>}
-              {state.images.length ? (
+              {state.images.length > 0 && (
                 <ul className="image__preview">
                   {state.images.map((image, index) => (
                     <li key={`${image.name}-${index}`}>
@@ -459,7 +478,7 @@ const App = () => {
                     </li>
                   ))}
                 </ul>
-              ) : null}
+              )}
             </div>
           </div>
           <div className="form-group">
